@@ -99,7 +99,7 @@ void printPrimes(vector<pair<int, bool>> const &prime)
 void printSyntaxError()
 {
     cerr << "Usage: primesto.exe [1 ... 10000000] \n"
-        << "\tCalculates all prime numbers up to a given number. \n" << endl;
+        << "\tCalculates all prime numbers up to a given number." << endl;
 }
 
 // finds primes up to parameter n
