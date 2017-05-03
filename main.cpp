@@ -9,25 +9,39 @@ void fillVector(vector<pair<int, bool>> &number, int n); // Fill vector with num
 void setPrimes(vector<pair<int, bool>> &prime, int maxNumber); // Set all primes in vector to 'true' and composites to 'false'
 void printPrimes(vector<pair<int, bool>> const &prime); // Print primes by a const reference (can't change value)
 
+void printSyntaxError();
 void runPrime(int n); // executes prime functions with n
 int askForNumber();
 
+
 int main(int argc, char *argv[])
 {
+    // Decide how to execute program based on command line arguments (or a lack of)
     if (argc == 1) // menu interface
     {
         runPrime(askForNumber());
         cout << endl;
-    } else if (argc == 2) // given argument
+    } else if (argc == 2) // given a single argument
     {
-        int argument = atoi(argv[1]);
-        runPrime(argument);
+        /*
+         * int 'argument' is initialized to -1. If atoi() is unable to find a number
+         * from argv[1], 'argument' will remain as -1. We can utilize this to tell
+         * when the user gives an invalid number (anything less than 1 or no number
+         * at all).
+        */
+
+        int argument = 0;
+        argument = atoi(argv[1]);
+
+        if (argument < 1) {
+            printSyntaxError(); return 1;
+        } else {
+            runPrime(argument);
+        }
     }
-    else if (argc > 2 || argv[1] == "-help") // help case
+    else if (argc > 1) // syntax error, every other case
     {
-        cerr << "Usage: primesto.exe [1 ... 10000000] \n"
-            << "    #\tCalculates prime number up to a given number. \n" << endl;
-        return 1;
+        printSyntaxError(); return 1;
     }
 
     return 0;
@@ -81,6 +95,13 @@ void printPrimes(vector<pair<int, bool>> const &prime)
 }
 
 /* ============== Interface Functions ============== */
+// informs user of syntax
+void printSyntaxError()
+{
+    cerr << "Usage: primesto.exe [1 ... 10000000] \n"
+        << "\tCalculates all prime numbers up to a given number. \n" << endl;
+}
+
 // finds primes up to parameter n
 void runPrime(int n)
 {
@@ -91,8 +112,8 @@ void runPrime(int n)
         fillVector(number, n);
         setPrimes(number, n);
         printPrimes(number);
-    } else {
-        cerr << "ERROR: Must be a number must be greater than 0!" << endl;
+    } else { // theoretically will never occur but good to have just in case
+        cerr << "ERROR: Must be a number and greater than 0!" << endl;
     }
 
     return;
@@ -108,7 +129,7 @@ int askForNumber()
         // number = atoi(input);
 
         if (!cin.good() || number < 1) {
-            cout << "ERROR: Must be a number greater than 0! \n" << endl;
+            cout << "ERROR: Must be a number and greater than 0! \n" << endl;
             cin.clear();
             cin.ignore(128, '\n');
         } else {
