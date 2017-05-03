@@ -33,8 +33,6 @@ int main(int argc, char *argv[])
         int argument = 0;
         argument = atoi(argv[1]);
 
-        cout << argument << endl;
-
         if (argument < 1 || argument > 10000000) {
             printSyntaxError(); return 1;
         } else {
