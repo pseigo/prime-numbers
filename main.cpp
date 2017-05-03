@@ -33,7 +33,9 @@ int main(int argc, char *argv[])
         int argument = 0;
         argument = atoi(argv[1]);
 
-        if (argument < 1) {
+        cout << argument << endl;
+
+        if (argument < 1 || argument > 10000000) {
             printSyntaxError(); return 1;
         } else {
             runPrime(argument);
@@ -128,7 +130,7 @@ int askForNumber()
         cin >> number;
         // number = atoi(input);
 
-        if (!cin.good() || number < 1) {
+        if (!cin.good() || number < 1 || number > 10000000) {
             cout << "ERROR: Must be a number and greater than 0! \n" << endl;
             cin.clear();
             cin.ignore(128, '\n');
