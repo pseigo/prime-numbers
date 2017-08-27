@@ -1,17 +1,17 @@
 #include <iostream>
-#include <cmath> // sqrt
+#include <map>
 #include <vector>
 #include <cstdlib> // atoi
 
 using namespace std;
 
-void fillVector(vector<pair<int, bool>> &number, int n); // Fill vector with numbers up to n
-void setPrimes(vector<pair<int, bool>> &prime, int maxNumber); // Set all primes in vector to 'true' and composites to 'false'
-void printPrimes(vector<pair<int, bool>> const &prime);
+void fill(map<int, bool>&, int);
+void setPrimes(vector<int>&, map<int, bool>&, int);
+void print(const vector<int>&);
 
 void printSyntaxError();
 void getPrimesUpTo(int n);
-int askForNumber();
+int getInt(int, int);
 
 
 int main(int argc, char *argv[])
@@ -19,9 +19,9 @@ int main(int argc, char *argv[])
     // Decide how to execute program based on command line arguments (or a lack of)
     if (argc == 1) // menu interface
     {
-        getPrimesUpTo(askForNumber());
-        cout << endl;
-    } else if (argc == 2) // given a single argument
+        getPrimesUpTo(getInt(1, 10000000));
+    }
+    else if (argc == 2) // given a single argument
     {
         /*
          * int 'argument' is initialized to 0. If atoi() is unable to find a number
@@ -34,57 +34,54 @@ int main(int argc, char *argv[])
         argument = atoi(argv[1]); // convert any numbers (as a string) from the argument to an int
 
         if (argument < 1 || argument > 10000000) {
-            printSyntaxError(); return 1;
-        } else {
-            getPrimesUpTo(argument);
+            printSyntaxError();
+            return 1;
         }
+
+        getPrimesUpTo(argument);
     }
     else if (argc > 1) // syntax error, every other case
     {
-        printSyntaxError(); return 1;
+        printSyntaxError();
+        return 1;
     }
 
     return 0;
 }
 
-
 /* ============== Prime Functions ============== */
-// Fill vector with numbers up to n
-void fillVector(vector<pair<int, bool>> &number, int n)
+// Fill map with numbers [2, upperBound]; assume all numbers are prime
+void fill(map<int, bool>& isPrime, int upperBound)
 {
-    // populate vector with numbers from 1-n and set boolean vaues to true
-    for (int current = 0; current < n; current++) {
-        number.push_back( make_pair((current + 1), true) );
+    for (int i = 2; i <= upperBound; ++i)
+        isPrime[i] = true;
+}
+
+// Pushes primes to vector using values from isPrime up to upperBound
+void setPrimes(vector<int>& primes, map<int, bool>& isPrime, int upperBound)
+{
+    for (int i = 2; i*i <= upperBound; i++) {
+
+        if (isPrime[i]) {
+            primes.push_back(i);
+
+            // factors of i starting at i*i are composite
+            for (int j = i*i; j <= upperBound; j += i)
+                isPrime[j] = false;
+        }
+
+    }
+
+    for (int i = 2; i <= upperBound; ++i) {
+        if (isPrime[i])
+            primes.push_back(i);
     }
 }
 
-// Set all primes in vector to 'true' and composites to 'false'
-void setPrimes(vector<pair<int, bool>> &prime, int maxNumber)
+void print(const vector<int>& vec)
 {
-    // mark non-primes (composite numbers) as false
-    for (int current = 2; current <= sqrt(maxNumber); current++) {
-        // if current number is true, theorem states it is PRIME!
-        if (prime[current - 1].second == true) {
-            for (int factor = (current*current); factor <= maxNumber; factor++) {
-                // if the current number is a factor, number is composite
-                if (factor % current == 0) {
-                    prime[factor - 1].second = false;
-                }
-            }
-        } // end of prime condition
-    }
-
-    return;
-}
-
-void printPrimes(vector<pair<int, bool>> const &prime)
-{
-    for (pair<int, bool> current : prime) {
-        if (current.second == true)
-            cout << current.first << ' ';
-    }
-
-    return;
+    for (int i : vec)
+        cout << i << '\n';
 }
 
 /* ============== Interface Functions ============== */
@@ -96,21 +93,22 @@ void printSyntaxError()
 
 void getPrimesUpTo(int n)
 {
-    if (n > 0) {
-        // int refers to number, bool refers to primeness (if true, its prime)
-        vector< pair<int,bool> > number;
-
-        fillVector(number, n);
-        setPrimes(number, n);
-        printPrimes(number);
-    } else { // theoretically will never occur but good to have just in case
+    if (n < 0) {
         cerr << "ERROR: Must be a number and greater than 0!" << endl;
+        return;
     }
+
+    map<int, bool> isPrime;
+    vector<int> primes;
+
+    fill(isPrime, n);
+    setPrimes(primes, isPrime, n);
+    print(primes);
 
     return;
 }
 
-int askForNumber()
+int getInt(int min, int max)
 {
     int number;
 
@@ -118,7 +116,7 @@ int askForNumber()
         cout << "Enter a positive number: ";
         cin >> number;
 
-        if (!cin.good() || number < 1 || number > 10000000) {
+        if (!cin.good() || number < min || number > max) {
             cout << "ERROR: Must be a number and greater than 0! \n" << endl;
             cin.clear();
             cin.ignore(128, '\n');
