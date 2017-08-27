@@ -1,7 +1,8 @@
+#include <cmath>    // sqrt
+#include <cstdlib>  // atoi
 #include <iostream>
 #include <map>
 #include <vector>
-#include <cstdlib> // atoi
 
 using namespace std;
 
@@ -60,7 +61,10 @@ void fill(map<int, bool>& isPrime, int upperBound)
 // Pushes primes to vector using values from isPrime up to upperBound
 void setPrimes(vector<int>& primes, map<int, bool>& isPrime, int upperBound)
 {
-    for (int i = 2; i*i <= upperBound; i++) {
+    primes.push_back(1); // 1 is assumed to be part of the set
+
+    int i = 2;
+    for (i; i*i <= upperBound; i++) {
 
         if (isPrime[i]) {
             primes.push_back(i);
@@ -72,7 +76,7 @@ void setPrimes(vector<int>& primes, map<int, bool>& isPrime, int upperBound)
 
     }
 
-    for (int i = 2; i <= upperBound; ++i) {
+    for (i; i <= upperBound; ++i) {
         if (isPrime[i])
             primes.push_back(i);
     }
